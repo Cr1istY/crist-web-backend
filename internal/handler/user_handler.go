@@ -8,11 +8,13 @@ import (
 )
 
 type UserHandler struct {
+	authService *service.AuthService
 	userService *service.UserService
 }
 
-func NewUserHandler(userService *service.UserService) *UserHandler {
+func NewUserHandler(authService *service.AuthService, userService *service.UserService) *UserHandler {
 	return &UserHandler{
+		authService: authService,
 		userService: userService,
 	}
 }
@@ -27,12 +29,46 @@ func (h *UserHandler) Login(c echo.Context) error {
 	if err := c.Bind(req); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid JSON"})
 	}
-	_, err := h.userService.Login(req.Username, req.Password)
+	user, err := h.userService.Login(req.Username, req.Password)
 	if err != nil {
 		return c.JSON(http.StatusUnauthorized, map[string]string{"error": err.Error()})
 	}
-	// TODO: jwt token
+
+	userAgent := c.Request().UserAgent()
+	ip := c.RealIP()
+
+	accessToken, refreshToken, err := h.authService.GenerateTokens(user, userAgent, ip)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to generate tokens"})
+	}
+
+	c.SetCookie(&http.Cookie{
+		Name:     "refresh_token",
+		Value:    refreshToken,
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteStrictMode,
+		Path:     "/api/refresh",
+		MaxAge:   int(h.authService.GetTheRefreshTokenExpired()),
+	})
+
 	return c.JSON(http.StatusOK, map[string]string{
-		"message": "Login successful",
+		"access_token": accessToken,
+	})
+}
+
+func (h *UserHandler) Refresh(c echo.Context) error {
+	cookie, err := c.Cookie("refresh_token")
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "Refresh token not found"})
+	}
+
+	accessToken, err := h.authService.RefreshAccessToken(cookie.Value)
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{
+		"access_token": accessToken,
 	})
 }

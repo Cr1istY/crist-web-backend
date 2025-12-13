@@ -6,6 +6,8 @@ import (
 	"crist-blog/internal/repository"
 	"crist-blog/internal/route"
 	"crist-blog/internal/service"
+	"crypto/rand"
+	"encoding/base64"
 	"log"
 	"os"
 
@@ -14,10 +16,19 @@ import (
 
 // 使用示例
 func main() {
+
+	bytes := make([]byte, 64)
+	_, err := rand.Read(bytes)
+	if err != nil {
+	}
+	jwtSecret := base64.URLEncoding.EncodeToString(bytes)
+
 	db := blogConfig.ConnectDB()
 	userRepo := repository.NewUserRepository(db)
+	authRepo := repository.NewRefreshTokenRepository(db)
 	userService := service.NewUserService(userRepo)
-	userHandler := handler.NewUserHandler(userService)
+	authService := service.NewAuthService(userRepo, authRepo, jwtSecret)
+	userHandler := handler.NewUserHandler(authService, userService)
 
 	e := echo.New()
 	route.SetupUserRoutes(e, userHandler)

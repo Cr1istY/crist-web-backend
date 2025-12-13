@@ -13,4 +13,5 @@ func SetupUserRoutes(e *echo.Echo, userHandler *handler.UserHandler) {
 		return c.String(http.StatusOK, "Hello, Admin!")
 	})
 	admin.POST("/login", userHandler.Login)
+	admin.POST("/refresh", userHandler.Refresh)
 }
