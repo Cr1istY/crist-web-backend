@@ -8,7 +8,7 @@ import (
 )
 
 func SetupUserRoutes(e *echo.Echo, userHandler *handler.UserHandler) {
-	admin := e.Group("/admin")
+	admin := e.Group("/api")
 	admin.GET("/check", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, Admin!")
 	})

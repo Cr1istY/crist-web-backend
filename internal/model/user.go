@@ -23,3 +23,7 @@ type User struct {
 	UpdatedAt time.Time      `gorm:"type:timestamp with time zone;not null" json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"type:timestamp with time zone" json:"-"` // 软删除（可选）
 }
+
+func (User) TableName() string {
+	return "admin.users"
+}
