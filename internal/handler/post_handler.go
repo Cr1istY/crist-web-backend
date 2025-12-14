@@ -27,7 +27,7 @@ type CreatePostRequest struct {
 	Slug            string     `json:"slug" validate:"required"`
 	Content         string     `json:"content"`
 	Excerpt         string     `json:"excerpt"`
-	Status          string     `json:"status" validate:"oneof=draft published"`
+	Status          string     `json:"status" validate:"oneof=draft published private"`
 	CategoryID      string     `json:"category_id" validate:"required,uuid4"`
 	Tags            []string   `json:"tags"`
 	MetaTitle       string     `json:"meta_title"`

@@ -13,6 +13,7 @@ type PostStatus string
 const (
 	Draft     PostStatus = "draft"
 	Published PostStatus = "published"
+	Private   PostStatus = "private"
 )
 
 type Post struct {
