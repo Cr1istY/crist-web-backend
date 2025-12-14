@@ -18,7 +18,7 @@ func (r *PostRepository) CreatePost(post *model.Post) error {
 	return r.DB.Create(post).Error
 }
 
-func (r *PostRepository) GetByID(id string) (*model.Post, error) {
+func (r *PostRepository) GetByID(id uint) (*model.Post, error) {
 	var post model.Post
 	err := r.DB.Where("id = ?", id).First(&post).Error
 	return &post, err
@@ -28,7 +28,7 @@ func (r *PostRepository) Update(post *model.Post) error {
 	return r.DB.Save(post).Error
 }
 
-func (r *PostRepository) Delete(id string) error {
+func (r *PostRepository) Delete(id uint) error {
 	return r.DB.Where("id = ?", id).Delete(&model.Post{}).Error
 }
 

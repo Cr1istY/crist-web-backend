@@ -4,6 +4,7 @@ import (
 	"crist-blog/internal/model"
 	"crist-blog/internal/service"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/google/uuid"
@@ -68,7 +69,9 @@ func (h *PostHandler) CreatePost(c echo.Context) error {
 }
 
 func (h *PostHandler) Get(c echo.Context) error {
-	id := c.Param("id")
+	idStr := c.Param("id")
+	id64, err := strconv.ParseUint(idStr, 10, 64)
+	id := uint(id64)
 	post, err := h.postService.GetByID(id)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
@@ -77,14 +80,19 @@ func (h *PostHandler) Get(c echo.Context) error {
 }
 
 func (h *PostHandler) Update(c echo.Context) error {
-	id := c.Param("id")
+	idStr := c.Param("id")
+	id64, err := strconv.ParseUint(idStr, 10, 64)
+	id := uint(id64)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+	}
 	var req CreatePostRequest
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
 
 	post := &model.Post{
-		ID:              uuid.MustParse(id),
+		ID:              id,
 		UserID:          uuid.MustParse(req.UserID), // 注意：实际应从 token 获取，不应由前端传
 		Title:           req.Title,
 		Slug:            req.Slug,
@@ -107,7 +115,12 @@ func (h *PostHandler) Update(c echo.Context) error {
 }
 
 func (h *PostHandler) Delete(c echo.Context) error {
-	id := c.Param("id")
+	idStr := c.Param("id")
+	id64, err := strconv.ParseUint(idStr, 10, 64)
+	id := uint(id64)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+	}
 	if err := h.postService.Delete(id); err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}

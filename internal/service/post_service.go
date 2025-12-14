@@ -24,12 +24,12 @@ func (s *PostService) CreatePost(post *model.Post) error {
 	return s.PostRepo.CreatePost(post)
 }
 
-func (s *PostService) GetByID(id string) (*model.Post, error) {
+func (s *PostService) GetByID(id uint) (*model.Post, error) {
 	return s.PostRepo.GetByID(id)
 }
 
 func (s *PostService) Update(post *model.Post) error {
-	existing, err := s.GetByID(post.ID.String())
+	existing, err := s.GetByID(post.ID)
 	if err != nil {
 		return err
 	}
@@ -50,7 +50,7 @@ func (s *PostService) Update(post *model.Post) error {
 	return s.PostRepo.Update(existing)
 }
 
-func (s *PostService) Delete(id string) error {
+func (s *PostService) Delete(id uint) error {
 	return s.PostRepo.Delete(id)
 }
 

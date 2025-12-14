@@ -16,7 +16,7 @@ const (
 )
 
 type Post struct {
-	ID              uuid.UUID      `gorm:"type:uuid;default:gen_random_uuid();primary_key" json:"id"`
+	ID              uint           `gorm:"primaryKey;autoIncrement" json:"id"`
 	UserID          uuid.UUID      `gorm:"type:uuid;not null" json:"user_id"`
 	Title           string         `gorm:"type:text;not null" json:"title"`
 	Slug            string         `gorm:"type:text;not null;uniqueIndex" json:"slug"`
