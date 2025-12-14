@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 	"gorm.io/gorm"
 )
 
@@ -23,7 +24,7 @@ type Post struct {
 	Excerpt         string         `gorm:"type:text" json:"excerpt"`
 	Status          PostStatus     `gorm:"type:post_status_enum;not null" json:"status"`
 	CategoryID      uuid.UUID      `gorm:"type:uuid;not null" json:"category_id"`
-	Tags            []string       `gorm:"type:text[]" json:"tags"`
+	Tags            pq.StringArray `gorm:"type:text[]" json:"tags"` // 👈 关键修改
 	Views           int            `gorm:"default:0" json:"views"`
 	Likes           int            `gorm:"default:0" json:"likes"`
 	PublishedAt     *time.Time     `json:"published_at"`
@@ -33,4 +34,8 @@ type Post struct {
 	CreatedAt       time.Time      `json:"created_at"`
 	UpdatedAt       time.Time      `json:"updated_at"`
 	DeletedAt       gorm.DeletedAt `gorm:"index" json:"deleted_at,omitempty"`
+}
+
+func (Post) TableName() string {
+	return "blog.posts"
 }

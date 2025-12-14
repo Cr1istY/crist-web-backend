@@ -26,12 +26,17 @@ func main() {
 	db := blogConfig.ConnectDB()
 	userRepo := repository.NewUserRepository(db)
 	authRepo := repository.NewRefreshTokenRepository(db)
+	postRepo := repository.NewPostRepository(db)
 	userService := service.NewUserService(userRepo)
 	authService := service.NewAuthService(userRepo, authRepo, jwtSecret)
+	postService := service.NewPostService(postRepo)
+	postHandler := handler.NewPostHandler(postService)
 	userHandler := handler.NewUserHandler(authService, userService)
 
 	e := echo.New()
-	route.SetupUserRoutes(e, userHandler)
+
+	route.SetupUserRoutes(e, userHandler, authService)
+	route.SetupBlogRouter(e, postHandler)
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
