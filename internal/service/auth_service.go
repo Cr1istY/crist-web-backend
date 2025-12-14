@@ -142,3 +142,7 @@ func (s *AuthService) RefreshAccessToken(refreshTokenStr string) (newAccessToken
 func (s *AuthService) GetTheRefreshTokenExpired() time.Duration {
 	return RefreshTokenExpire
 }
+
+func (s *AuthService) JwtSecret() string {
+	return s.jwtSecret
+}
