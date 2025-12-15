@@ -155,6 +155,8 @@ func (h *PostHandler) ListToFrontend(c echo.Context) error {
 			Tags:      post.Tags,
 			Date:      post.PublishedAt.Format("2006-01-02"),
 			Excerpt:   post.Excerpt,
+			Views:     post.Views,
+			Likes:     post.Likes,
 			Thumbnail: post.Thumbnail,
 		})
 	}

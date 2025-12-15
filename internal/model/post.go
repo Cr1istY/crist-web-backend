@@ -44,6 +44,8 @@ type PostFrontend struct {
 	Tags      []string `json:"tags"`
 	Date      string   `json:"date"`
 	Excerpt   string   `json:"excerpt"`
+	Views     int      `gorm:"default:0" json:"views"`
+	Likes     int      `gorm:"default:0" json:"likes"`
 	Thumbnail string   `json:"thumbnail,omitempty"`
 }
 
