@@ -12,6 +12,7 @@ import (
 	"os"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 // 使用示例
@@ -34,7 +35,7 @@ func main() {
 	userHandler := handler.NewUserHandler(authService, userService)
 
 	e := echo.New()
-
+	e.Use(middleware.BodyLimit("10M"))
 	route.SetupUserRoutes(e, userHandler, authService)
 	route.SetupBlogRouter(e, postHandler)
 	port := os.Getenv("PORT")
