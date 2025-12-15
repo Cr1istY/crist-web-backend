@@ -58,3 +58,11 @@ func (s *PostService) List() ([]*model.Post, error) {
 
 	return s.PostRepo.List()
 }
+
+func (s *PostService) GetHotPosts() ([]*model.HotPost, error) {
+	return s.PostRepo.GetHotPost()
+}
+
+func (s *PostService) GetLatestPosts() ([]*model.LatestPost, error) {
+	return s.PostRepo.GetLatestPosts()
+}

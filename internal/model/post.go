@@ -49,6 +49,36 @@ type PostFrontend struct {
 	Thumbnail string   `json:"thumbnail,omitempty"`
 }
 
+type HotPost struct {
+	ID         uint      `gorm:"primaryKey;autoIncrement" json:"id"`
+	Title      string    `gorm:"type:text;not null" json:"title"`
+	CategoryID uuid.UUID `gorm:"type:uuid;not null" json:"category_id"`
+	CreatedAt  time.Time `json:"created_at"`
+	Excerpt    string    `gorm:"type:text" json:"excerpt"`
+}
+
+type HotPostFrontend struct {
+	ID       uint   `gorm:"primaryKey;autoIncrement" json:"id"`
+	Title    string `gorm:"type:text;not null" json:"title"`
+	Category string `json:"category"`
+	Date     string `json:"date"`
+	Excerpt  string `gorm:"type:text" json:"excerpt"`
+}
+
+type LatestPost struct {
+	ID         uint      `gorm:"primaryKey;autoIncrement" json:"id"`
+	Title      string    `gorm:"type:text;not null" json:"title"`
+	CategoryID uuid.UUID `gorm:"type:uuid;not null" json:"category_id"`
+	CreatedAt  time.Time `json:"created_at"`
+}
+
+type LatestPostFrontend struct {
+	ID       uint   `gorm:"primaryKey;autoIncrement" json:"id"`
+	Title    string `gorm:"type:text;not null" json:"title"`
+	Date     string `json:"date"`
+	Category string `json:"category"`
+}
+
 func (Post) TableName() string {
 	return "blog.posts"
 }

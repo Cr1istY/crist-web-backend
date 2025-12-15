@@ -36,3 +36,25 @@ func (r *PostRepository) List() ([]*model.Post, error) {
 	var posts []*model.Post
 	return posts, r.DB.Find(&posts).Error
 }
+
+func (r *PostRepository) GetHotPost() ([]*model.HotPost, error) {
+	var hotPosts []*model.HotPost
+	err := r.DB.Model(&model.Post{}).
+		Select("id, title, category_id, created_at, excerpt").
+		Where("status = ?", model.Published).
+		Order("likes desc").
+		Limit(2).
+		Find(&hotPosts).Error
+	return hotPosts, err
+}
+
+func (r *PostRepository) GetLatestPosts() ([]*model.LatestPost, error) {
+	var latestPosts []*model.LatestPost
+	err := r.DB.Model(&model.Post{}).
+		Select("id, title, category_id, created_at").
+		Where("status = ?", model.Published).
+		Order("created_at desc").
+		Limit(3).
+		Find(&latestPosts).Error
+	return latestPosts, err
+}

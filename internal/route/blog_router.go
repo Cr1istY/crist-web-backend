@@ -20,6 +20,8 @@ func SetupBlogRouter(e *echo.Echo, postHandler *handler.PostHandler) {
 	posts.GET("/get/:id", postHandler.Get)
 	posts.PUT("/update/:id", postHandler.Update)
 	posts.DELETE("/delete/:id", postHandler.Delete)
+	posts.GET("/hot", postHandler.GetHotPosts)
+	posts.GET("/latest", postHandler.GetLatestPosts)
 }
 
 func proxyImage(c echo.Context) error {

@@ -28,10 +28,14 @@ func main() {
 	userRepo := repository.NewUserRepository(db)
 	authRepo := repository.NewRefreshTokenRepository(db)
 	postRepo := repository.NewPostRepository(db)
+	categoryRepo := repository.NewCategoryRepository(db)
+
 	userService := service.NewUserService(userRepo)
 	authService := service.NewAuthService(userRepo, authRepo, jwtSecret)
 	postService := service.NewPostService(postRepo)
-	postHandler := handler.NewPostHandler(postService)
+	categoryService := service.NewCategoryService(categoryRepo)
+
+	postHandler := handler.NewPostHandler(postService, categoryService)
 	userHandler := handler.NewUserHandler(authService, userService)
 
 	e := echo.New()

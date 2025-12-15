@@ -12,12 +12,14 @@ import (
 )
 
 type PostHandler struct {
-	postService *service.PostService
+	postService     *service.PostService
+	categoryService *service.CategoryService
 }
 
-func NewPostHandler(postService *service.PostService) *PostHandler {
+func NewPostHandler(postService *service.PostService, categoryService *service.CategoryService) *PostHandler {
 	return &PostHandler{
-		postService: postService,
+		postService:     postService,
+		categoryService: categoryService,
 	}
 }
 
@@ -158,6 +160,49 @@ func (h *PostHandler) ListToFrontend(c echo.Context) error {
 			Views:     post.Views,
 			Likes:     post.Likes,
 			Thumbnail: post.Thumbnail,
+		})
+	}
+	return c.JSON(http.StatusOK, blogPosts)
+}
+
+func (h *PostHandler) GetHotPosts(c echo.Context) error {
+	posts, err := h.postService.GetHotPosts()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+	}
+	var blogPosts []*model.HotPostFrontend
+	for _, post := range posts {
+		category, err := h.categoryService.GetNameByID(post.CategoryID)
+		if err != nil {
+			category = "未分类"
+		}
+		blogPosts = append(blogPosts, &model.HotPostFrontend{
+			ID:       post.ID,
+			Title:    post.Title,
+			Category: category,
+			Date:     post.CreatedAt.Format("2006-01-02"),
+			Excerpt:  post.Excerpt,
+		})
+	}
+	return c.JSON(http.StatusOK, blogPosts)
+}
+
+func (h *PostHandler) GetLatestPosts(c echo.Context) error {
+	posts, err := h.postService.GetLatestPosts()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+	}
+	var blogPosts []*model.LatestPostFrontend
+	for _, post := range posts {
+		category, err := h.categoryService.GetNameByID(post.CategoryID)
+		if err != nil {
+			category = "未分类"
+		}
+		blogPosts = append(blogPosts, &model.LatestPostFrontend{
+			ID:       post.ID,
+			Title:    post.Title,
+			Category: category,
+			Date:     post.CreatedAt.Format("2006-01-02"),
 		})
 	}
 	return c.JSON(http.StatusOK, blogPosts)
