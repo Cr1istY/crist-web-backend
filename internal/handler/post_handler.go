@@ -144,26 +144,19 @@ func (h *PostHandler) ListToFrontend(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	postLength := 0
+	var blogPosts []*model.PostFrontend
 	for _, post := range posts {
 		if post.Status != model.Published {
 			continue
 		}
-		postLength++
-	}
-	blogPosts := make([]*model.PostFrontend, postLength)
-	for i, post := range posts {
-		if post.Status != model.Published {
-			continue
-		}
-		blogPosts[i] = &model.PostFrontend{
+		blogPosts = append(blogPosts, &model.PostFrontend{
 			ID:        post.ID,
 			Title:     post.Title,
 			Tags:      post.Tags,
 			Date:      post.PublishedAt.Format("2006-01-02"),
 			Excerpt:   post.Excerpt,
 			Thumbnail: post.Thumbnail,
-		}
+		})
 	}
 	return c.JSON(http.StatusOK, blogPosts)
 }
