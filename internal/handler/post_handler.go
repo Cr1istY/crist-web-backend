@@ -133,5 +133,8 @@ func (h *PostHandler) List(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
+	for _, post := range posts {
+		post.Content = ""
+	}
 	return c.JSON(http.StatusOK, posts)
 }

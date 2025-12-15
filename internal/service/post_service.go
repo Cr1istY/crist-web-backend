@@ -55,5 +55,6 @@ func (s *PostService) Delete(id uint) error {
 }
 
 func (s *PostService) List() ([]*model.Post, error) {
+
 	return s.PostRepo.List()
 }
