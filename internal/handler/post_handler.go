@@ -144,8 +144,18 @@ func (h *PostHandler) ListToFrontend(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	blogPosts := make([]*model.PostFrontend, len(posts))
+	postLength := 0
+	for _, post := range posts {
+		if post.Status != model.Published {
+			continue
+		}
+		postLength++
+	}
+	blogPosts := make([]*model.PostFrontend, postLength)
 	for i, post := range posts {
+		if post.Status != model.Published {
+			continue
+		}
 		blogPosts[i] = &model.PostFrontend{
 			ID:        post.ID,
 			Title:     post.Title,
