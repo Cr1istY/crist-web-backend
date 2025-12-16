@@ -81,6 +81,41 @@ func (h *PostHandler) Get(c echo.Context) error {
 	return c.JSON(http.StatusOK, post)
 }
 
+func (h *PostHandler) GetBlogToViewers(c echo.Context) error {
+	idStr := c.Param("id")
+	id64, err := strconv.ParseUint(idStr, 10, 64)
+	id := uint(id64)
+	post, err := h.postService.GetByID(id)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+	}
+	dateStr := ""
+	if post.PublishedAt != nil {
+		// 格式：2025年12月15日
+		dateStr = post.PublishedAt.Format("2006-1-2")
+	} else {
+		dateStr = post.CreatedAt.Format("2006-1-2")
+	}
+	categoryName, err := h.categoryService.GetNameByID(post.CategoryID)
+	if err != nil {
+		categoryName = "未分类"
+	}
+	var postToViewers = &model.PostDetail{
+		ID:              post.ID,
+		Title:           post.Title,
+		Content:         post.Content,
+		Date:            dateStr,
+		Tags:            post.Tags,
+		Category:        categoryName,
+		Views:           post.Views,
+		Likes:           post.Likes,
+		Excerpt:         post.Excerpt,
+		MetaTitle:       post.MetaTitle,
+		MetaDescription: post.MetaDescription,
+	}
+	return c.JSON(http.StatusOK, postToViewers)
+}
+
 func (h *PostHandler) Update(c echo.Context) error {
 	idStr := c.Param("id")
 	id64, err := strconv.ParseUint(idStr, 10, 64)

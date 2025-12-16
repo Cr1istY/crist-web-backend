@@ -5,6 +5,7 @@ import (
 	"crist-blog/internal/handler"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 
@@ -17,7 +18,7 @@ func SetupBlogRouter(e *echo.Echo, postHandler *handler.PostHandler) {
 	posts := api.Group("/posts")
 	posts.POST("/create", postHandler.CreatePost)
 	posts.GET("/getAllPosts", postHandler.ListToFrontend)
-	posts.GET("/get/:id", postHandler.Get)
+	posts.GET("/get/:id", postHandler.GetBlogToViewers)
 	posts.PUT("/update/:id", postHandler.Update)
 	posts.DELETE("/delete/:id", postHandler.Delete)
 	posts.GET("/hot", postHandler.GetHotPosts)
@@ -43,7 +44,13 @@ func proxyImage(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError,
 			fmt.Sprintf("Failed to fetch image: %v", err))
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Println(err)
+			return
+		}
+	}(resp.Body)
 
 	// 检查响应状态
 	if resp.StatusCode != http.StatusOK {
