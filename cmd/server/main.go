@@ -37,11 +37,14 @@ func main() {
 
 	postHandler := handler.NewPostHandler(postService, categoryService)
 	userHandler := handler.NewUserHandler(authService, userService)
+	categoryHandler := handler.NewCategoryHandler(categoryService)
 
 	e := echo.New()
 	e.Use(middleware.BodyLimit("10M"))
 	route.SetupUserRoutes(e, userHandler, authService)
 	route.SetupBlogRouter(e, postHandler)
+	route.SetupCategoryRouter(e, categoryHandler)
+	// Start server
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"

@@ -14,6 +14,11 @@ type Category struct {
 	CreatedAt   time.Time `json:"created_at"`
 }
 
+type CreatePostCategory struct {
+	ID   uuid.UUID `json:"id"`
+	Name string    `json:"name"`
+}
+
 func (C *Category) TableName() string {
 	return "blog.categories"
 }

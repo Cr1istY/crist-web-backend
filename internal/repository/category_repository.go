@@ -23,3 +23,10 @@ func (r *CategoryRepository) GetNameByID(id uuid.UUID) (string, error) {
 		First(&name).Error
 	return name, err
 }
+
+func (r *CategoryRepository) ListAllCategories() ([]model.Category, error) {
+	var categories []model.Category
+	err := r.DB.Model(&model.Category{}).
+		Find(&categories).Error
+	return categories, err
+}

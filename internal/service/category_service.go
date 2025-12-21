@@ -1,6 +1,7 @@
 package service
 
 import (
+	"crist-blog/internal/model"
 	"crist-blog/internal/repository"
 
 	"github.com/google/uuid"
@@ -18,4 +19,8 @@ func NewCategoryService(categoryRepo *repository.CategoryRepository) *CategorySe
 
 func (s *CategoryService) GetNameByID(id uuid.UUID) (string, error) {
 	return s.CategoryRepo.GetNameByID(id)
+}
+
+func (s *CategoryService) ListAllCategories() ([]model.Category, error) {
+	return s.CategoryRepo.ListAllCategories()
 }
