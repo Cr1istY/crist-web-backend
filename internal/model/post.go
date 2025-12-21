@@ -51,6 +51,7 @@ type CreatePostRequest struct {
 	MetaTitle       string     `json:"meta_title"`
 	PublishedAt     *time.Time `json:"published_at"`
 	MetaDescription string     `json:"meta_description"`
+	Thumbnail       string     `json:"thumbnail"`
 }
 
 type PostFrontend struct {

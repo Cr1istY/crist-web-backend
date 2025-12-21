@@ -44,6 +44,9 @@ func (h *PostHandler) CreatePost(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid user ID"})
 	}
+	if req.Title == "" {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Title is required"})
+	}
 	post := &model.Post{
 		UserID:          userID,
 		Title:           req.Title,
@@ -57,6 +60,7 @@ func (h *PostHandler) CreatePost(c echo.Context) error {
 		MetaDescription: req.MetaDescription,
 		Views:           defaultValue,
 		Likes:           defaultValue,
+		Thumbnail:       req.Thumbnail,
 		CreatedAt:       time.Now(),
 		UpdatedAt:       time.Now(),
 	}
@@ -64,7 +68,7 @@ func (h *PostHandler) CreatePost(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
 
-	return c.JSON(http.StatusOK, post)
+	return c.JSON(http.StatusOK, map[string]interface{}{"message": "Post created successfully", "id": post.ID})
 }
 
 func (h *PostHandler) Get(c echo.Context) error {
