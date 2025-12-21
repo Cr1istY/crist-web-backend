@@ -23,8 +23,10 @@ func SetupBlogRouter(e *echo.Echo, postHandler *handler.PostHandler) {
 	posts.DELETE("/delete/:id", postHandler.Delete)
 	posts.GET("/hot", postHandler.GetHotPosts)
 	posts.GET("/latest", postHandler.GetLatestPosts)
+	posts.POST("/create", postHandler.CreatePost)
 }
 
+// proxyImage 处理图片代理请求
 func proxyImage(c echo.Context) error {
 	// 获取目标图片URL
 	imageURL := c.QueryParam("url")

@@ -38,6 +38,21 @@ type Post struct {
 	DeletedAt       gorm.DeletedAt `gorm:"index" json:"deleted_at,omitempty"`
 }
 
+// CreatePostRequest 创建文章请求结构体
+type CreatePostRequest struct {
+	UserID          string     `json:"user_id" validate:"required,uuid4"`
+	Title           string     `json:"title" validate:"required"`
+	Slug            string     `json:"slug" validate:"required"`
+	Content         string     `json:"content"`
+	Excerpt         string     `json:"excerpt"`
+	Status          string     `json:"status" validate:"oneof=draft published private"`
+	CategoryID      string     `json:"category_id" validate:"required,uuid4"`
+	Tags            []string   `json:"tags"`
+	MetaTitle       string     `json:"meta_title"`
+	PublishedAt     *time.Time `json:"published_at"`
+	MetaDescription string     `json:"meta_description"`
+}
+
 type PostFrontend struct {
 	ID        uint     `json:"id"`
 	Title     string   `json:"title"`

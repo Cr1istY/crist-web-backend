@@ -23,35 +23,29 @@ func NewPostHandler(postService *service.PostService, categoryService *service.C
 	}
 }
 
-type CreatePostRequest struct {
-	UserID          string     `json:"user_id" validate:"required,uuid4"`
-	Title           string     `json:"title" validate:"required"`
-	Slug            string     `json:"slug" validate:"required"`
-	Content         string     `json:"content"`
-	Excerpt         string     `json:"excerpt"`
-	Status          string     `json:"status" validate:"oneof=draft published private"`
-	CategoryID      string     `json:"category_id" validate:"required,uuid4"`
-	Tags            []string   `json:"tags"`
-	MetaTitle       string     `json:"meta_title"`
-	MetaDescription string     `json:"meta_description"`
-	PublishedAt     *time.Time `json:"published_at"`
-}
-
 func (h *PostHandler) CreatePost(c echo.Context) error {
-	var req CreatePostRequest
+	var req model.CreatePostRequest
+	userId := "00000000-0000-0000-0000-000000000001"
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
-
+	if req.UserID == "" {
+		req.UserID = userId
+	}
 	if _, err := uuid.Parse(req.UserID); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid user ID"})
 	}
 	if _, err := uuid.Parse(req.CategoryID); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid category ID"})
 	}
+	defaultValue := 0
 
+	userID, err := uuid.Parse(userId)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid user ID"})
+	}
 	post := &model.Post{
-		UserID:          uuid.MustParse(req.UserID),
+		UserID:          userID,
 		Title:           req.Title,
 		Slug:            req.Slug,
 		Content:         req.Content,
@@ -61,7 +55,10 @@ func (h *PostHandler) CreatePost(c echo.Context) error {
 		Tags:            req.Tags,
 		MetaTitle:       req.MetaTitle,
 		MetaDescription: req.MetaDescription,
-		PublishedAt:     req.PublishedAt,
+		Views:           defaultValue,
+		Likes:           defaultValue,
+		CreatedAt:       time.Now(),
+		UpdatedAt:       time.Now(),
 	}
 	if err := h.postService.CreatePost(post); err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
@@ -123,7 +120,7 @@ func (h *PostHandler) Update(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
-	var req CreatePostRequest
+	var req model.CreatePostRequest
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
@@ -140,7 +137,10 @@ func (h *PostHandler) Update(c echo.Context) error {
 		Tags:            req.Tags,
 		MetaTitle:       req.MetaTitle,
 		MetaDescription: req.MetaDescription,
-		PublishedAt:     req.PublishedAt,
+		PublishedAt:     nil,
+	}
+	if req.PublishedAt != nil {
+		post.PublishedAt = req.PublishedAt
 	}
 
 	if err := h.postService.Update(post); err != nil {
